@@ -46,9 +46,14 @@ async function cargarEstudiantes() {
 
   const lista = document.getElementById("lista-estudiantes");
   lista.innerHTML = "";
+  
   data.forEach((est) => {
     const item = document.createElement("li");
-    item.textContent = `${est.nombre} (${est.clase})`; // ← CORREGIDO
+    item.innerHTML = `
+      ${est.nombre} (${est.clase})
+      <button onclick="editarEstudiante('${est.id}', '${est.nombre}', '${est.correo}', '${est.clase}')">✏️ Editar</button>
+      <button onclick="eliminarEstudiante('${est.id}')">🗑️ Eliminar</button>
+    `;
     lista.appendChild(item);
   });
 }
@@ -160,5 +165,48 @@ async function cerrarSesion() {
     localStorage.removeItem("token");
     alert("Sesión cerrada.");
     window.location.href = "index.html";
+  }
+}
+
+async function eliminarEstudiante(id) {
+  if (!confirm("¿Seguro que deseas eliminar este estudiante?")) return;
+
+  const { error } = await client
+    .from("estudiantes")
+    .delete()
+    .eq("id", id);
+
+  if (error) {
+    alert("Error al eliminar: " + error.message);
+  } else {
+    alert("Estudiante eliminado correctamente");
+    cargarEstudiantes();
+  }
+}
+
+async function editarEstudiante(id, nombreActual, correoActual, claseActual) {
+  const nuevoNombre = prompt("Nuevo nombre:", nombreActual);
+  const nuevoCorreo = prompt("Nuevo correo:", correoActual);
+  const nuevaClase = prompt("Nueva clase:", claseActual);
+
+  if (!nuevoNombre || !nuevoCorreo || !nuevaClase) {
+    alert("Todos los campos son obligatorios.");
+    return;
+  }
+
+  const { error } = await client
+    .from("estudiantes")
+    .update({
+      nombre: nuevoNombre,
+      correo: nuevoCorreo,
+      clase: nuevaClase
+    })
+    .eq("id", id);
+
+  if (error) {
+    alert("Error al actualizar: " + error.message);
+  } else {
+    alert("Estudiante actualizado correctamente");
+    cargarEstudiantes();
   }
 }
