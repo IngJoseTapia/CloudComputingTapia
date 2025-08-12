@@ -36,7 +36,7 @@ async function agregarEstudiante() {
 async function cargarEstudiantes() {
   const { data, error } = await client
     .from("estudiantes")
-    .select("*")
+    .select("id, nombre, correo, clase")
     .order("created_at", { ascending: false });
 
   if (error) {
@@ -46,17 +46,24 @@ async function cargarEstudiantes() {
 
   const lista = document.getElementById("lista-estudiantes");
   lista.innerHTML = "";
-  
+
   data.forEach((est) => {
     const item = document.createElement("li");
     item.innerHTML = `
       ${est.nombre} (${est.clase})
-      <button onclick="editarEstudiante('${est.id}', '${est.nombre}', '${est.correo}', '${est.clase}')">✏️ Editar</button>
-      <button onclick="eliminarEstudiante('${est.id}')">🗑️ Eliminar</button>
+      <button style="margin-left:10px; background:#00ffcc; color:#000; padding:4px 8px; border:none; border-radius:4px; cursor:pointer;"
+        onclick="editarEstudiante('${est.id}', '${est.nombre}', '${est.correo}', '${est.clase}')">
+        ✏️ Editar
+      </button>
+      <button style="margin-left:5px; background:#ff4444; color:#fff; padding:4px 8px; border:none; border-radius:4px; cursor:pointer;"
+        onclick="eliminarEstudiante('${est.id}')">
+        🗑️ Eliminar
+      </button>
     `;
     lista.appendChild(item);
   });
 }
+
 
 cargarEstudiantes();
 
