@@ -8,10 +8,7 @@ async function agregarEstudiante() {
   const correo = document.getElementById("correo").value;
   const clase = document.getElementById("clase").value;
 
-  const {
-    data: { user },
-    error: userError,
-  } = await client.auth.getUser();
+  const { data: { user }, error: userError } = await client.auth.getUser();
 
   if (userError || !user) {
     alert("No estás autenticado.");
@@ -49,21 +46,22 @@ async function cargarEstudiantes() {
 
   data.forEach((est) => {
     const item = document.createElement("li");
+    item.classList.add("estudiante-item");
+
     item.innerHTML = `
-      ${est.nombre} (${est.clase})
-      <button style="margin-left:10px; background:#00ffcc; color:#000; padding:4px 8px; border:none; border-radius:4px; cursor:pointer;"
-        onclick="editarEstudiante('${est.id}', '${est.nombre}', '${est.correo}', '${est.clase}')">
-        ✏️ Editar
-      </button>
-      <button style="margin-left:5px; background:#ff4444; color:#fff; padding:4px 8px; border:none; border-radius:4px; cursor:pointer;"
-        onclick="eliminarEstudiante('${est.id}')">
-        🗑️ Eliminar
-      </button>
+      <div class="estudiante-info">
+        <strong>${est.nombre}</strong><br>
+        <small>${est.clase || "Sin clase asignada"}</small>
+      </div>
+      <div class="estudiante-acciones">
+        <button class="btn btn-primario" onclick="editarEstudiante('${est.id}', '${est.nombre}', '${est.correo}', '${est.clase}')">✏️ Editar</button>
+        <button class="btn btn-peligro" onclick="eliminarEstudiante('${est.id}')">🗑️ Eliminar</button>
+      </div>
     `;
+
     lista.appendChild(item);
   });
 }
-
 
 cargarEstudiantes();
 
@@ -76,23 +74,17 @@ async function subirArchivo() {
     return;
   }
 
-  const {
-    data: { user },
-    error: userError,
-  } = await client.auth.getUser();
+  const { data: { user }, error: userError } = await client.auth.getUser();
 
   if (userError || !user) {
     alert("Sesión no válida.");
     return;
   }
 
-  const nombreRuta = `${user.id}/${archivo.name}`; // ← CORREGIDO
-  const { data, error } = await client.storage
+  const nombreRuta = `${user.id}/${archivo.name}`;
+  const { error } = await client.storage
     .from("tareas")
-    .upload(nombreRuta, archivo, {
-      cacheControl: "3600",
-      upsert: false,
-    });
+    .upload(nombreRuta, archivo, { cacheControl: "3600", upsert: false });
 
   if (error) {
     alert("Error al subir: " + error.message);
@@ -103,19 +95,14 @@ async function subirArchivo() {
 }
 
 async function listarArchivos() {
-  const {
-    data: { user },
-    error: userError,
-  } = await client.auth.getUser();
+  const { data: { user }, error: userError } = await client.auth.getUser();
 
   if (userError || !user) {
     alert("Sesión no válida.");
     return;
   }
 
-  const { data, error } = await client.storage
-    .from("tareas")
-    .list(`${user.id}`, { limit: 20 }); // ← CORREGIDO
+  const { data, error } = await client.storage.from("tareas").list(`${user.id}`, { limit: 20 });
 
   const lista = document.getElementById("lista-archivos");
   lista.innerHTML = "";
@@ -128,7 +115,7 @@ async function listarArchivos() {
   data.forEach(async (archivo) => {
     const { data: signedUrlData, error: signedUrlError } = await client.storage
       .from("tareas")
-      .createSignedUrl(`${user.id}/${archivo.name}`, 60); // ← CORREGIDO
+      .createSignedUrl(`${user.id}/${archivo.name}`, 60);
 
     if (signedUrlError) {
       console.error("Error al generar URL firmada:", signedUrlError.message);
@@ -154,7 +141,7 @@ async function listarArchivos() {
         <a href="${publicUrl}" target="_blank">Ver PDF</a>
       `;
     } else {
-      item.innerHTML = `<a href="${publicUrl}" target="_blank">${archivo.name}</a>`; // ← CORREGIDO
+      item.innerHTML = `<a href="${publicUrl}" target="_blank">${archivo.name}</a>`;
     }
 
     lista.appendChild(item);
@@ -178,10 +165,7 @@ async function cerrarSesion() {
 async function eliminarEstudiante(id) {
   if (!confirm("¿Seguro que deseas eliminar este estudiante?")) return;
 
-  const { error } = await client
-    .from("estudiantes")
-    .delete()
-    .eq("id", id);
+  const { error } = await client.from("estudiantes").delete().eq("id", id);
 
   if (error) {
     alert("Error al eliminar: " + error.message);
