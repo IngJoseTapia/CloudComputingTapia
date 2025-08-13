@@ -163,3 +163,61 @@ ul li {
     font-size: 14px;
   }
 }
+
+.lista-estudiantes li{
+display: flex;
+justify-content: space-between;
+align-items: center;
+padding: 8px;
+border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.lista-estudiantes button {
+padding: 6px 12px;
+border: none;
+border-radius: 6px;
+background: linear-gradient(45deg, #00ffff, #00ff9d);
+color: #000;
+font-weight: bold;
+font-size: 14px;
+cursor: pointer;
+transition: transform 0.2s, box-shadow 0.3s;
+}
+.lista-estudiantes button:hover {
+transform: scale(1.05);
+box-shadow: 0 0 10px #00ffff, 0 0 15px #00ff9d;
+}
+
+/* Botón genérico */
+.btn {
+  display: inline-block;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+/* Botón principal */
+.btn-primario {
+  background: linear-gradient(45deg, #00ffff, #00ff9d);
+  color: #000;
+}
+
+.btn-primario:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 15px #00ffff, 0 0 25px #00ff9d;
+}
+
+/* Botón secundario */
+.btn-secundario {
+  background: linear-gradient(45deg, #ff6f61, #ff3c3c);
+  color: #fff;
+}
+
+.btn-secundario:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 15px #ff6f61, 0 0 25px #ff3c3c;
+}
